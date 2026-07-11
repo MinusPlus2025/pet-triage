@@ -1,6 +1,8 @@
+import { LOADING_TEXT } from '../constants'
+
 // Message bubbles. Model on the left, user on the right. (§3.3)
-export default function ChatArea({ messages }) {
-  if (!messages.length) return null
+export default function ChatArea({ messages, loading }) {
+  if (!messages.length && !loading) return null
 
   return (
     <section className="flex flex-col gap-3">
@@ -35,6 +37,14 @@ export default function ChatArea({ messages }) {
           </div>
         )
       })}
+
+      {loading && (
+        <div className="flex justify-start">
+          <div className="max-w-[80%] rounded-2xl rounded-bl-sm bg-[var(--color-surface)] px-4 py-2.5 text-sm text-[var(--color-ink-dim)]">
+            {LOADING_TEXT}
+          </div>
+        </div>
+      )}
     </section>
   )
 }
