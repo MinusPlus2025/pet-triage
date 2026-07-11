@@ -10,7 +10,7 @@ export default function TopBar() {
         </span>
       </div>
       <p className="mt-2 text-sm text-[var(--color-ink-dim)]">
-        拍张照，30秒判断要不要去医院
+        毛孩子不对劲？拍张照，30秒告诉你要不要去医院
       </p>
     </header>
   )

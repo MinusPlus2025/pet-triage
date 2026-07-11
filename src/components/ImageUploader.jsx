@@ -66,10 +66,10 @@ export default function ImageUploader({ images, onChange }) {
         } ${full ? 'cursor-not-allowed opacity-50' : ''}`}
       >
         <p className="text-sm text-[var(--color-ink-dim)]">
-          {full ? '已达上限（最多 3 张）' : '点击或拖拽上传照片'}
+          {full ? '已达上限（最多 3 张）' : '拍下让你担心的地方'}
         </p>
         <p className="mt-1 text-xs text-[var(--color-ink-faint)]">
-          最多 3 张 · 自动压缩
+          {full ? '想换的话先删掉一张' : '呕吐物、便便、皮肤、姿势都可以拍'}
         </p>
         <input
           ref={inputRef}

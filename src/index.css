@@ -15,7 +15,8 @@
   --color-yellow: #e6b830;
   --color-red: #d64545;
 
-  --font-sans: 'Noto Sans SC', sans-serif;
+  /* System-first: PingFang SC / MiSans carry a soft feel with zero download */
+  --font-sans: -apple-system, 'PingFang SC', 'MiSans', 'Noto Sans SC', sans-serif;
 }
 
 html,
@@ -30,6 +31,7 @@ body {
   color: var(--color-ink);
   font-family: var(--font-sans);
   font-weight: 400;
+  line-height: 1.7;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -39,4 +41,5 @@ h1,
 h2,
 h3 {
   font-weight: 300;
+  letter-spacing: 0.02em;
 }
