@@ -3,7 +3,7 @@ import TopBar from './components/TopBar'
 import InputArea from './components/InputArea'
 import ChatArea from './components/ChatArea'
 import VerdictCard from './components/VerdictCard'
-import { buildUserContent, sendTurn, FORCE_CONCLUDE } from './gemini'
+import { buildUserContent, sendTurn, FORCE_CONCLUDE } from './chat'
 
 const ERROR_TEXT = '判断出错，请重新描述'
 
@@ -58,7 +58,7 @@ export default function App() {
 
     try {
       const { parsed, raw } = await sendTurn(contents)
-      historyRef.current = [...historyRef.current, { role: 'model', parts: [{ text: raw }] }]
+      historyRef.current = [...historyRef.current, { role: 'model', text: raw, images: [] }]
 
       if (parsed.type === 'verdict' || parsed.level) {
         // Unknown level is handled by VerdictCard (renders as YELLOW). (§4.3)
