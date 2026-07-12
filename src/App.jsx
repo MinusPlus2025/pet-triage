@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import TopBar from './components/TopBar'
 import InputArea from './components/InputArea'
 import ChatArea from './components/ChatArea'
@@ -26,8 +26,25 @@ export default function App() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
-  // Full Gemini conversation (contents), including the model's raw JSON replies.
+  // Full conversation (contents), including the model's raw JSON replies.
   const historyRef = useRef([])
+  // Anchor for auto-scrolling to the newest bubble / verdict.
+  const bottomRef = useRef(null)
+
+  // Keep the latest message or verdict in view as the conversation grows.
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
+  }, [messages, loading, verdict, error])
+
+  // Clear everything and go back to a blank input.
+  function handleReset() {
+    historyRef.current = []
+    setMessages([])
+    setVerdict(null)
+    setError(null)
+    setImages([])
+    setText('')
+  }
 
   // §3.1 — clicking an example clears the current conversation, then fills
   // the case text and options.
@@ -117,6 +134,16 @@ export default function App() {
           <ChatArea messages={messages} loading={loading} />
           {error && <p className="text-sm text-[var(--color-red)]">{error}</p>}
           {verdict && <VerdictCard verdict={verdict} />}
+          {verdict && (
+            <button
+              type="button"
+              onClick={handleReset}
+              className="self-center text-sm text-[var(--color-ink-dim)] underline underline-offset-4 transition-colors hover:text-[var(--color-ink)]"
+            >
+              重新开始
+            </button>
+          )}
+          <div ref={bottomRef} />
         </div>
       )}
     </div>

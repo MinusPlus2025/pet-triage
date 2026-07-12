@@ -50,6 +50,14 @@ export default function InputArea({
       <textarea
         value={text}
         onChange={(e) => setText(e.target.value)}
+        onKeyDown={(e) => {
+          // Enter sends; Shift+Enter is a newline. Ignore Enter while an IME
+          // is composing (e.g. selecting Chinese candidates).
+          if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
+            e.preventDefault()
+            if (!disabled) onSubmit()
+          }
+        }}
         placeholder={INPUT_PLACEHOLDER}
         rows={3}
         className="w-full resize-none rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-ink-faint)] focus:border-[var(--color-ink-dim)] focus:outline-none"
