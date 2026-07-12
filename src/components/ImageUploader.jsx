@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { MAX_IMAGES, IMAGE_MAX_WIDTH } from '../constants'
 import { PROVIDER_SUPPORTS_IMAGES } from '../providers'
+import { CameraGlyph } from './icons'
 
 // Compress to IMAGE_MAX_WIDTH wide, return a base64 data URL. (§3.2)
 function compressToBase64(file) {
@@ -66,6 +67,9 @@ export default function ImageUploader({ images, onChange }) {
             : 'border-[var(--color-border)] bg-[var(--color-surface)]'
         } ${full ? 'cursor-not-allowed opacity-50' : ''}`}
       >
+        {!full && (
+          <CameraGlyph size={24} className="mb-1.5 text-[var(--color-ink-faint)]" />
+        )}
         <p className="text-sm text-[var(--color-ink-dim)]">
           {full ? '已达上限（最多 3 张）' : '拍下让你担心的地方'}
         </p>

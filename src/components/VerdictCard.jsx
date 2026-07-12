@@ -62,8 +62,12 @@ export default function VerdictCard({ verdict }) {
       className="overflow-hidden rounded-[10px]"
       style={{ backgroundColor: cfg.bg, border: `1.5px solid ${cfg.border}` }}
     >
-      {/* title */}
-      <div className="px-5 pt-5 pb-3">
+      {/* title + 圆点 */}
+      <div className="flex items-center gap-2 px-5 pt-5 pb-3">
+        <span
+          className="h-2 w-2 shrink-0 rounded-full"
+          style={{ backgroundColor: color }}
+        />
         <h2 className="text-xl font-light" style={{ color }}>
           {cfg.title}
         </h2>

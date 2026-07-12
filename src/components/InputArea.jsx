@@ -1,7 +1,10 @@
 import ImageUploader from './ImageUploader'
+import { CatFace, DogFace } from './icons'
 import { SPECIES, AGES, EXAMPLES, INPUT_PLACEHOLDER } from '../constants'
 
-function ChoiceGroup({ label, options, value, onChange }) {
+const SPECIES_ICONS = { cat: CatFace, dog: DogFace }
+
+function ChoiceGroup({ label, options, value, onChange, icons }) {
   return (
     <div>
       <span className="mb-2 block text-xs text-[var(--color-ink-faint)]">
@@ -10,17 +13,19 @@ function ChoiceGroup({ label, options, value, onChange }) {
       <div className="flex flex-wrap gap-2">
         {options.map((opt) => {
           const active = opt.id === value
+          const Icon = icons?.[opt.id]
           return (
             <button
               key={opt.id}
               type="button"
               onClick={() => onChange(opt.id)}
-              className={`rounded-[20px] border px-4 py-1.5 text-sm transition-colors ${
+              className={`inline-flex items-center gap-1.5 rounded-[20px] border px-4 py-1.5 text-sm transition-colors ${
                 active
                   ? 'border-[var(--color-primary)] bg-[var(--color-surface-2)] text-[var(--color-primary)]'
                   : 'border-[var(--color-border-pill)] bg-[var(--color-surface)] text-[var(--color-ink-dim)] hover:text-[var(--color-ink)]'
               }`}
             >
+              {Icon && <Icon size={16} />}
               {opt.label}
             </button>
           )
@@ -69,6 +74,7 @@ export default function InputArea({
           options={SPECIES}
           value={species}
           onChange={setSpecies}
+          icons={SPECIES_ICONS}
         />
         <ChoiceGroup label="几岁了？" options={AGES} value={age} onChange={setAge} />
       </div>
