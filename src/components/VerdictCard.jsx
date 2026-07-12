@@ -2,7 +2,7 @@ import { LEVELS, DISCLAIMER } from '../constants'
 
 // YELLOW: the "就诊时可要求的检查方向" action is rendered in its own
 // "带着这张清单去医院" sub-block. The model returns a flat actions array,
-// so we detect the checklist items by keyword. (§3.4)
+// so we detect the checklist items by keyword.
 const CHECKLIST_HINTS = ['检查', '可要求', '便检', '刮片', '化验', '拍片', '就诊时']
 
 function splitYellowActions(actions = []) {
@@ -15,7 +15,7 @@ function splitYellowActions(actions = []) {
   return { checklist, rest }
 }
 
-// §3.4 — jump to the phone's map app searching "宠物医院" via URL scheme.
+// Jump to the phone's map app searching "宠物医院" via URL scheme.
 // No map API. Desktop falls back to the Google Maps search URL.
 function openNearbyHospital() {
   const q = encodeURIComponent('宠物医院')
@@ -43,9 +43,37 @@ function ActionList({ items }) {
   )
 }
 
+// Fallback card when the verdict data is invalid or the level is unknown.
+function InvalidVerdictCard() {
+  return (
+    <section className="overflow-hidden rounded-[10px] border-[1.5px] border-[var(--color-border)] bg-[var(--color-surface)]">
+      <div className="flex items-center gap-2 px-5 pt-5 pb-3">
+        <span className="h-2 w-2 shrink-0 rounded-full bg-[var(--color-ink-faint)]" />
+        <h2 className="text-xl font-light text-[var(--color-ink-dim)]">
+          暂时无法可靠判断
+        </h2>
+      </div>
+      <div className="flex flex-col gap-6 px-5 pb-5">
+        <p className="text-sm leading-relaxed text-[var(--color-ink)]">
+          本次结果格式异常，请重新描述。若宠物出现呼吸困难、无法排尿、抽搐、严重外伤或疑似中毒，请立即联系宠物医院。
+        </p>
+      </div>
+      <div className="border-t-[0.5px] border-[var(--color-border)] px-5 py-3">
+        <p className="text-xs leading-relaxed text-[var(--color-ink-faint)]">
+          {DISCLAIMER}
+        </p>
+      </div>
+    </section>
+  )
+}
+
 export default function VerdictCard({ verdict }) {
-  // Unknown level falls back to YELLOW rendering. (§4.3)
-  const level = LEVELS[verdict.level] ? verdict.level : 'YELLOW'
+  // Reject missing verdict or unknown level — never silently downgrade.
+  if (!verdict || !verdict.level || !LEVELS[verdict.level]) {
+    return <InvalidVerdictCard />
+  }
+
+  const level = verdict.level
   const cfg = LEVELS[level]
   const color = cfg.color
 

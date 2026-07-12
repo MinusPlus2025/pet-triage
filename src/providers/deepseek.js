@@ -1,5 +1,5 @@
 // DeepSeek provider via the official OpenAI-compatible endpoint.
-// Key exposed in the frontend — hackathon demo only (§2).
+// Key exposed in the frontend — hackathon demo only.
 //
 // Provider contract (identical to gemini.js / qwen.js):
 //   generate(history, systemPrompt) -> Promise<string>
@@ -8,11 +8,10 @@
 //   - returns the model's raw text reply
 //
 // NOTE: DeepSeek's chat models are TEXT-ONLY — the API does not accept image
-// inputs. We drop any uploaded images here (with a warning) and send text only.
-// The three preset demo cases are all text, so they run fine. For real photo
-// triage, switch VITE_MODEL_PROVIDER to a vision provider (gemini / qwen).
+// inputs. Images are silently dropped here. For photo triage, switch
+// VITE_MODEL_PROVIDER to a vision provider (qwen / gemini).
 
-// DeepSeek chat models are text-only. (§2 capability flag)
+// DeepSeek chat models are text-only.
 export const supportsImages = false
 
 const ENDPOINT = 'https://api.deepseek.com/chat/completions'
@@ -23,11 +22,7 @@ function toMessages(history, systemPrompt) {
   const messages = [{ role: 'system', content: systemPrompt }]
   for (const m of history) {
     const role = m.role === 'model' ? 'assistant' : 'user'
-    if (m.images && m.images.length > 0) {
-      console.warn(
-        `[deepseek] ${m.images.length} image(s) dropped — DeepSeek is text-only.`,
-      )
-    }
+    // DeepSeek is text-only — images are never included in the request.
     messages.push({ role, content: m.text || '' })
   }
   return messages
@@ -50,7 +45,6 @@ export async function generate(history, systemPrompt) {
         model: MODEL,
         messages: toMessages(history, systemPrompt),
         temperature: 0.4,
-        // Prompt mandates JSON-only output; enable strict JSON mode. (§4)
         response_format: { type: 'json_object' },
       }),
     })
@@ -60,9 +54,9 @@ export async function generate(history, systemPrompt) {
 
   if (!res.ok) {
     const detail = await res.text().catch(() => '')
-    if (res.status === 401) throw new Error(`BAD_KEY: DeepSeek 401 ${detail}`)
-    if (res.status === 429) throw new Error(`RATE_LIMIT: DeepSeek 429 ${detail}`)
-    throw new Error(`DeepSeek API ${res.status} ${detail}`)
+    if (res.status === 401) throw new Error(`BAD_KEY: DeepSeek 401 ${detail.slice(0, 120)}`)
+    if (res.status === 429) throw new Error(`RATE_LIMIT: DeepSeek 429 ${detail.slice(0, 120)}`)
+    throw new Error(`DeepSeek API ${res.status} ${detail.slice(0, 120)}`)
   }
 
   const data = await res.json()

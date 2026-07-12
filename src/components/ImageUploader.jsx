@@ -1,15 +1,34 @@
 import { useRef, useState } from 'react'
 import { MAX_IMAGES, IMAGE_MAX_WIDTH } from '../constants'
-import { PROVIDER_SUPPORTS_IMAGES } from '../providers'
+import { SUPPORTS_IMAGES, PROVIDER_NAME } from '../providers'
 import { CameraGlyph } from './icons'
 
-// Compress to IMAGE_MAX_WIDTH wide, return a base64 data URL. (§3.2)
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
+const MAX_FILE_SIZE = 8 * 1024 * 1024 // 8 MB
+
+function validateFile(file) {
+  if (!ALLOWED_TYPES.includes(file.type)) {
+    return `不支持的格式：${file.name || '未知文件'}（仅限 JPG、PNG、WebP）`
+  }
+  if (file.size > MAX_FILE_SIZE) {
+    return `文件过大：${file.name || '未知文件'}（单张不超过 8MB）`
+  }
+  return null
+}
+
+// Compress to IMAGE_MAX_WIDTH wide, keep aspect ratio, output JPEG quality 0.85.
 function compressToBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
+    reader.onerror = () => reject(new Error('文件读取失败'))
     reader.onload = () => {
       const img = new Image()
+      img.onerror = () => reject(new Error('图片解码失败'))
       img.onload = () => {
+        if (img.width <= 0 || img.height <= 0) {
+          reject(new Error('图片尺寸无效'))
+          return
+        }
         const scale = Math.min(1, IMAGE_MAX_WIDTH / img.width)
         const w = Math.round(img.width * scale)
         const h = Math.round(img.height * scale)
@@ -17,13 +36,19 @@ function compressToBase64(file) {
         canvas.width = w
         canvas.height = h
         const ctx = canvas.getContext('2d')
-        ctx.drawImage(img, 0, 0, w, h)
-        resolve(canvas.toDataURL('image/jpeg', 0.85))
+        if (!ctx) {
+          reject(new Error('Canvas context 获取失败'))
+          return
+        }
+        try {
+          ctx.drawImage(img, 0, 0, w, h)
+          resolve(canvas.toDataURL('image/jpeg', 0.85))
+        } catch {
+          reject(new Error('图片压缩失败'))
+        }
       }
-      img.onerror = reject
       img.src = reader.result
     }
-    reader.onerror = reject
     reader.readAsDataURL(file)
   })
 }
@@ -31,13 +56,40 @@ function compressToBase64(file) {
 export default function ImageUploader({ images, onChange }) {
   const inputRef = useRef(null)
   const [dragging, setDragging] = useState(false)
+  const [uploadError, setUploadError] = useState(null)
+
+  const isVision = SUPPORTS_IMAGES
+  const isDeepSeek = PROVIDER_NAME === 'deepseek'
 
   async function addFiles(fileList) {
-    const files = Array.from(fileList).filter((f) => f.type.startsWith('image/'))
-    if (!files.length) return
+    setUploadError(null)
+    const files = Array.from(fileList)
+
+    // Validate all before processing.
+    for (const f of files) {
+      const err = validateFile(f)
+      if (err) {
+        setUploadError(err)
+        return
+      }
+    }
+
     const room = MAX_IMAGES - images.length
+    if (room <= 0) {
+      setUploadError('已达上限（最多 3 张），想换的话先删掉一张')
+      return
+    }
+
     const picked = files.slice(0, room)
-    const compressed = await Promise.all(picked.map(compressToBase64))
+    const compressed = []
+    for (const f of picked) {
+      try {
+        compressed.push(await compressToBase64(f))
+      } catch (e) {
+        setUploadError(e.message || '图片处理失败')
+        return
+      }
+    }
     onChange([...images, ...compressed])
   }
 
@@ -47,6 +99,23 @@ export default function ImageUploader({ images, onChange }) {
 
   const full = images.length >= MAX_IMAGES
 
+  // DeepSeek mode: no upload area, just a notice.
+  if (isDeepSeek) {
+    return (
+      <div>
+        <div className="rounded-[10px] border border-dashed border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-5 text-center">
+          <p className="text-sm text-[var(--color-ink-dim)]">
+            当前使用 DeepSeek，只分析文字，不会读取照片。
+          </p>
+          <p className="mt-1 text-xs text-[var(--color-ink-faint)]">
+            请写清症状持续时间、出现频率、精神状态和食欲。
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  // Vision model mode: show upload UI.
   return (
     <div>
       <div
@@ -74,12 +143,12 @@ export default function ImageUploader({ images, onChange }) {
           {full ? '已达上限（最多 3 张）' : '拍下让你担心的地方'}
         </p>
         <p className="mt-1 text-xs text-[var(--color-ink-faint)]">
-          {full ? '想换的话先删掉一张' : '呕吐物、便便、皮肤、姿势都可以拍'}
+          {full ? '想换的话先删掉一张' : 'JPG、PNG、WebP，单张不超过 8MB'}
         </p>
         <input
           ref={inputRef}
           type="file"
-          accept="image/*"
+          accept="image/jpeg,image/png,image/webp"
           multiple
           hidden
           onChange={(e) => {
@@ -89,13 +158,19 @@ export default function ImageUploader({ images, onChange }) {
         />
       </div>
 
-      {/* Be honest when the active model can't actually read photos. (§2) */}
-      {!PROVIDER_SUPPORTS_IMAGES && (
+      {/* Privacy notice for vision models */}
+      {isVision && (
         <p className="mt-2 text-xs text-[var(--color-ink-faint)]">
-          当前模型只读文字，暂时看不了照片，会根据你的描述判断
+          照片会发送给当前模型用于本次分析。请勿上传人脸、地址或联系方式。
         </p>
       )}
 
+      {/* Upload error */}
+      {uploadError && (
+        <p className="mt-2 text-xs text-[var(--color-red)]">{uploadError}</p>
+      )}
+
+      {/* Thumbnails */}
       {images.length > 0 && (
         <div className="mt-3 flex gap-2">
           {images.map((src, i) => (
@@ -103,12 +178,16 @@ export default function ImageUploader({ images, onChange }) {
               key={i}
               className="relative h-16 w-16 overflow-hidden rounded-lg border border-[var(--color-border)]"
             >
-              <img src={src} alt="" className="h-full w-full object-cover" />
+              <img
+                src={src}
+                alt={`上传图片 ${i + 1}`}
+                className="h-full w-full object-cover"
+              />
               <button
                 type="button"
                 onClick={() => removeAt(i)}
                 className="absolute right-0 top-0 flex h-5 w-5 items-center justify-center rounded-bl-lg bg-black/60 text-xs text-white"
-                aria-label="删除"
+                aria-label={`删除图片 ${i + 1}`}
               >
                 ×
               </button>

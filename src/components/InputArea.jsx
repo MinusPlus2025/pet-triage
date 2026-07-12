@@ -1,6 +1,7 @@
 import ImageUploader from './ImageUploader'
 import { CatFace, DogFace } from './icons'
 import { SPECIES, AGES, EXAMPLES, INPUT_PLACEHOLDER } from '../constants'
+import { SUPPORTS_IMAGES } from '../providers'
 
 const SPECIES_ICONS = { cat: CatFace, dog: DogFace }
 
@@ -48,6 +49,9 @@ export default function InputArea({
   onExample,
   disabled,
 }) {
+  const canSubmitByText = text.trim().length > 0
+  const canSubmitByImage = SUPPORTS_IMAGES && images.length > 0
+
   return (
     <section className="flex flex-col gap-5">
       <ImageUploader images={images} onChange={setImages} />
@@ -65,6 +69,7 @@ export default function InputArea({
         }}
         placeholder={INPUT_PLACEHOLDER}
         rows={3}
+        maxLength={1000}
         className="w-full resize-none rounded-[10px] border-[0.5px] border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-ink-faint)] focus:border-[var(--color-primary)] focus:outline-none"
       />
 

@@ -5,13 +5,15 @@ import ChatArea from '../components/ChatArea'
 import VerdictCard from '../components/VerdictCard'
 import { buildUserContent, sendTurn, FORCE_CONCLUDE } from '../chat'
 
-// §5 — surface the failure type instead of a single generic message.
+// Surface the failure type as a user-facing message.
 function errorText(err) {
   const msg = String(err?.message || err)
   if (msg.startsWith('MISSING_KEY')) return '没读到 API Key，请检查 .env 配置'
   if (msg.startsWith('BAD_KEY')) return 'API Key 无效，请检查 .env 里的 key'
   if (msg.startsWith('RATE_LIMIT')) return '请求太频繁了，稍等一下再试'
   if (msg.startsWith('NETWORK')) return '网络连接不上，检查一下网络再试'
+  if (msg.startsWith('INVALID_MODEL_OUTPUT'))
+    return '这次结果格式异常，未生成分诊结论。请重新描述，紧急情况直接联系宠物医院。'
   return '判断出错，请重新描述'
 }
 
@@ -46,7 +48,7 @@ export default function TriagePage() {
     setText('')
   }
 
-  // §3.1 — clicking an example clears the current conversation, then fills
+  // Clicking an example clears the current conversation, then fills
   // the case text and options.
   function handleExample(ex) {
     historyRef.current = []
@@ -65,7 +67,10 @@ export default function TriagePage() {
     const userImages = images
     if (!userText && userImages.length === 0) return
 
-    // reflect the user's turn in the chat, then clear the inputs
+    // Clear old verdict before every new submission.
+    setVerdict(null)
+
+    // Reflect the user's turn in the chat, then clear the inputs.
     setMessages((prev) => [...prev, { role: 'user', text: userText, images: userImages }])
     setText('')
     setImages([])
@@ -83,7 +88,7 @@ export default function TriagePage() {
     })
     historyRef.current = [...prevHistory, userContent]
 
-    // Hard safeguard: once the model has sent 3 messages, force a conclusion. (req 3)
+    // Hard safeguard: once the model has sent 3 messages, force a conclusion.
     const modelCount = historyRef.current.filter((c) => c.role === 'model').length
     const contents =
       modelCount >= 3 ? [...historyRef.current, FORCE_CONCLUDE] : historyRef.current
@@ -92,10 +97,9 @@ export default function TriagePage() {
       const { parsed, raw } = await sendTurn(contents)
       historyRef.current = [...historyRef.current, { role: 'model', text: raw, images: [] }]
 
-      if (parsed.type === 'verdict' || parsed.level) {
-        // Unknown level is handled by VerdictCard (renders as YELLOW). (§4.3)
+      if (parsed.type === 'verdict') {
         setVerdict(parsed)
-      } else if (parsed.type === 'question' || parsed.text) {
+      } else if (parsed.type === 'question') {
         setMessages((prev) => [...prev, { role: 'model', text: parsed.text }])
       } else {
         throw new Error('unexpected shape')

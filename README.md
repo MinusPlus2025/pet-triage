@@ -100,8 +100,8 @@
 - Vite
 - React
 - Tailwind CSS
-- DeepSeek `deepseek-chat`
-- 可切换至通义 Qwen 或 Gemini
+- Qwen `qwen-vl-plus`（默认视觉模型）
+- 可切换至 Gemini 或 DeepSeek
 - 单页 Web 应用
 - 无路由
 - 无独立状态管理库
@@ -127,25 +127,25 @@ cp .env.example .env
 
 ### 3. 配置模型
 
-默认使用 DeepSeek：
-
-```env
-VITE_MODEL_PROVIDER=deepseek
-VITE_DEEPSEEK_API_KEY=你的比赛专用Key
-```
-
-也可以切换到通义 Qwen：
+默认使用 Qwen（支持图片）：
 
 ```env
 VITE_MODEL_PROVIDER=qwen
 VITE_QWEN_API_KEY=你的比赛专用Key
 ```
 
-或切换到 Gemini：
+也可以切换到 Gemini（支持图片）：
 
 ```env
 VITE_MODEL_PROVIDER=gemini
 VITE_GEMINI_API_KEY=你的比赛专用Key
+```
+
+或切换到 DeepSeek（纯文字）：
+
+```env
+VITE_MODEL_PROVIDER=deepseek
+VITE_DEEPSEEK_API_KEY=你的比赛专用Key
 ```
 
 ### 4. 启动项目
@@ -163,13 +163,13 @@ npm run dev
 公开仓库中的 `.env.example` 只应保留空值：
 
 ```env
-# Model provider: deepseek / qwen / gemini
-VITE_MODEL_PROVIDER=deepseek
+# Model provider: qwen / gemini / deepseek
+VITE_MODEL_PROVIDER=qwen
 
 # Keep all values empty in the public repository
-VITE_DEEPSEEK_API_KEY=
 VITE_QWEN_API_KEY=
 VITE_GEMINI_API_KEY=
+VITE_DEEPSEEK_API_KEY=
 ```
 
 真实 Key 只保存在本地 `.env` 文件中。
@@ -180,21 +180,26 @@ VITE_GEMINI_API_KEY=
 
 ## 模型说明
 
+### Qwen / Gemini（默认）
+
+比赛 Demo 默认使用 Qwen 视觉模型，支持读取图片。
+
+Qwen 和 Gemini 均为多模态模型：
+
+- 症状文字和上传的照片会一起发送给模型
+- 模型参考图片和文字共同判断
+
 ### DeepSeek
 
-当前项目使用的 DeepSeek Chat 模型为纯文本模型。
+DeepSeek Chat 为纯文本模型，仅作为备用选项。
 
 当模型提供方设置为 DeepSeek 时：
 
 - 症状文字会发送给 DeepSeek
-- 上传照片不会发送给 DeepSeek
+- 上传功能不可用，无法发送照片
 - 结果主要依据用户的文字描述生成
 
 因此，使用 DeepSeek 时，用户需要尽量完整地描述症状。
-
-### Qwen / Gemini
-
-切换到支持视觉输入的模型后，可以将照片和文字共同作为判断参考。
 
 需要注意：
 

@@ -1,13 +1,13 @@
 // Qwen (通义千问) provider via DashScope's OpenAI-compatible endpoint.
-// Key exposed in the frontend — hackathon demo only (PRD §2).
+// Key exposed in the frontend — hackathon demo only.
 //
-// Provider contract (identical to gemini.js):
+// Provider contract (identical to gemini.js / deepseek.js):
 //   generate(history, systemPrompt) -> Promise<string>
 //   - history: neutral turns { role: 'user' | 'model', text, images: string[] }
 //              where images are base64 data URLs
 //   - returns the model's raw text reply
 
-// qwen-vl-plus is multimodal — it can read uploaded photos. (§2 capability flag)
+// qwen-vl-plus is multimodal — it can read uploaded photos.
 export const supportsImages = true
 
 const MODEL = 'qwen-vl-plus'
@@ -32,21 +32,34 @@ function toMessages(history, systemPrompt) {
 }
 
 export async function generate(history, systemPrompt) {
-  const res = await fetch(ENDPOINT, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${API_KEY}`,
-    },
-    body: JSON.stringify({
-      model: MODEL,
-      messages: toMessages(history, systemPrompt),
-    }),
-  })
+  if (!API_KEY || API_KEY.trim().length === 0) {
+    throw new Error('MISSING_KEY: VITE_QWEN_API_KEY 未配置')
+  }
+
+  let res
+  try {
+    res = await fetch(ENDPOINT, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: MODEL,
+        messages: toMessages(history, systemPrompt),
+      }),
+    })
+  } catch (e) {
+    throw new Error(`NETWORK: ${e.message}`)
+  }
+
   if (!res.ok) {
     const detail = await res.text().catch(() => '')
-    throw new Error(`Qwen API ${res.status} ${detail}`)
+    if (res.status === 401) throw new Error(`BAD_KEY: Qwen 401 ${detail.slice(0, 120)}`)
+    if (res.status === 429) throw new Error(`RATE_LIMIT: Qwen 429 ${detail.slice(0, 120)}`)
+    throw new Error(`Qwen API ${res.status} ${detail.slice(0, 120)}`)
   }
+
   const data = await res.json()
   const content = data?.choices?.[0]?.message?.content
   // qwen-vl may return content as an array of parts; normalise to text.

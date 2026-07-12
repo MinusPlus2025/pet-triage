@@ -1,4 +1,4 @@
-// Gemini provider. Key exposed in the frontend — hackathon demo only (PRD §2).
+// Gemini provider. Key exposed in the frontend — hackathon demo only.
 //
 // Provider contract (identical across providers):
 //   generate(history, systemPrompt) -> Promise<string>
@@ -7,7 +7,7 @@
 //   - returns the model's raw text reply
 // Parsing / retry / follow-up safeguard all live in the shared layer (src/chat.js).
 
-// gemini-2.5-flash is multimodal — it can read uploaded photos. (§2 capability flag)
+// gemini-2.5-flash is multimodal — it can read uploaded photos.
 export const supportsImages = true
 
 const MODEL = 'gemini-2.5-flash'
@@ -36,19 +36,36 @@ function toContents(history) {
 }
 
 export async function generate(history, systemPrompt) {
-  const res = await fetch(`${ENDPOINT}?key=${API_KEY}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      system_instruction: { parts: [{ text: systemPrompt }] },
-      contents: toContents(history),
-      generationConfig: { responseMimeType: 'application/json', temperature: 0.4 },
-    }),
-  })
+  if (!API_KEY || API_KEY.trim().length === 0) {
+    throw new Error('MISSING_KEY: VITE_GEMINI_API_KEY 未配置')
+  }
+
+  let res
+  try {
+    res = await fetch(`${ENDPOINT}?key=${API_KEY}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        system_instruction: { parts: [{ text: systemPrompt }] },
+        contents: toContents(history),
+        generationConfig: { responseMimeType: 'application/json', temperature: 0.4 },
+      }),
+    })
+  } catch (e) {
+    throw new Error(`NETWORK: ${e.message}`)
+  }
+
   if (!res.ok) {
     const detail = await res.text().catch(() => '')
-    throw new Error(`Gemini API ${res.status} ${detail}`)
+    if (res.status === 401 || res.status === 403) {
+      throw new Error(`BAD_KEY: Gemini ${res.status} ${detail.slice(0, 120)}`)
+    }
+    if (res.status === 429) {
+      throw new Error(`RATE_LIMIT: Gemini 429 ${detail.slice(0, 120)}`)
+    }
+    throw new Error(`Gemini API ${res.status} ${detail.slice(0, 120)}`)
   }
+
   const data = await res.json()
   const parts = data?.candidates?.[0]?.content?.parts || []
   return parts.map((p) => p.text || '').join('')
