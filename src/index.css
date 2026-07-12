@@ -22,8 +22,8 @@
   /* System-first: PingFang SC / MiSans carry a soft feel with zero download */
   --font-sans: -apple-system, 'PingFang SC', 'MiSans', 'Noto Sans SC', sans-serif;
 
-  /* 标题 display 字体：中文圆润黑体 + 拉丁圆体 */
-  --font-display: 'ZCOOL QingKe HuangYou', 'Baloo 2', 'PingFang SC', sans-serif;
+  /* 标题 display 字体：站酷快乐体（圆润可爱）+ 拉丁圆体 */
+  --font-display: 'ZCOOL KuaiLe', 'ZCOOL QingKe HuangYou', 'Baloo 2', 'PingFang SC', sans-serif;
 }
 
 html,
