@@ -12,6 +12,9 @@
 // The three preset demo cases are all text, so they run fine. For real photo
 // triage, switch VITE_MODEL_PROVIDER to a vision provider (gemini / qwen).
 
+// DeepSeek chat models are text-only. (§2 capability flag)
+export const supportsImages = false
+
 const ENDPOINT = 'https://api.deepseek.com/chat/completions'
 const MODEL = import.meta.env.VITE_DEEPSEEK_MODEL || 'deepseek-chat'
 const API_KEY = import.meta.env.VITE_DEEPSEEK_API_KEY

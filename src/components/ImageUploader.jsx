@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import { MAX_IMAGES, IMAGE_MAX_WIDTH } from '../constants'
+import { PROVIDER_SUPPORTS_IMAGES } from '../providers'
 
 // Compress to IMAGE_MAX_WIDTH wide, return a base64 data URL. (§3.2)
 function compressToBase64(file) {
@@ -83,6 +84,13 @@ export default function ImageUploader({ images, onChange }) {
           }}
         />
       </div>
+
+      {/* Be honest when the active model can't actually read photos. (§2) */}
+      {!PROVIDER_SUPPORTS_IMAGES && (
+        <p className="mt-2 text-xs text-[var(--color-ink-faint)]">
+          当前模型只读文字，暂时看不了照片，会根据你的描述判断
+        </p>
+      )}
 
       {images.length > 0 && (
         <div className="mt-3 flex gap-2">

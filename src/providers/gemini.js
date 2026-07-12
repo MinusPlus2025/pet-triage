@@ -7,6 +7,9 @@
 //   - returns the model's raw text reply
 // Parsing / retry / follow-up safeguard all live in the shared layer (src/chat.js).
 
+// gemini-2.5-flash is multimodal — it can read uploaded photos. (§2 capability flag)
+export const supportsImages = true
+
 const MODEL = 'gemini-2.5-flash'
 const ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY

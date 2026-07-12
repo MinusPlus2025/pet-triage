@@ -7,6 +7,9 @@
 //              where images are base64 data URLs
 //   - returns the model's raw text reply
 
+// qwen-vl-plus is multimodal — it can read uploaded photos. (§2 capability flag)
+export const supportsImages = true
+
 const MODEL = 'qwen-vl-plus'
 const ENDPOINT =
   'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions'
