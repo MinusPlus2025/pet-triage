@@ -57,12 +57,12 @@ export default function InputArea({
 
       <div className="flex flex-col gap-4">
         <ChoiceGroup
-          label="物种"
+          label="谁不舒服？"
           options={SPECIES}
           value={species}
           onChange={setSpecies}
         />
-        <ChoiceGroup label="年龄段" options={AGES} value={age} onChange={setAge} />
+        <ChoiceGroup label="几岁了？" options={AGES} value={age} onChange={setAge} />
       </div>
 
       <button
