@@ -1,19 +1,23 @@
 @import 'tailwindcss';
 
-/* Design tokens locked by PRD §3.5 */
+/* Design tokens — 燕麦浅色 + 藏青主色 配色系统 */
 @theme {
-  --color-bg: #1a1a1e;
-  --color-surface: #232329;
-  --color-surface-2: #2c2c33;
-  --color-border: rgba(235, 235, 240, 0.12);
-  --color-ink: rgba(235, 235, 240, 0.85);
-  --color-ink-dim: rgba(235, 235, 240, 0.55);
-  --color-ink-faint: rgba(235, 235, 240, 0.4);
+  --color-bg: #f9f9f6; /* 燕麦色页面底，深夜不刺眼 */
+  --color-surface: #ffffff; /* 卡片 / 输入区 */
+  --color-surface-2: #e8ebf0; /* 选中态胶囊 / 用户气泡 / 拖拽态 */
+  --color-border: #e8e6e1; /* 通用边框 */
+  --color-border-pill: #e0ded9; /* 未选中胶囊边框 */
+  --color-primary: #1a2b49; /* 藏青主色：标题 / 主按钮 / 选中态 */
 
-  /* Triage levels */
-  --color-green: #2d9e6b;
-  --color-yellow: #e6b830;
-  --color-red: #d64545;
+  /* 文字 */
+  --color-ink: #1a1c29; /* 主文字 */
+  --color-ink-dim: #6b6b68; /* 次级文字 */
+  --color-ink-faint: #a8a6a1; /* 占位 / 弱提示 */
+
+  /* 三色分级（降饱和，标题/圆点色） */
+  --color-green: #2e8555;
+  --color-yellow: #c97f1a;
+  --color-red: #c93f38;
 
   /* System-first: PingFang SC / MiSans carry a soft feel with zero download */
   --font-sans: -apple-system, 'PingFang SC', 'MiSans', 'Noto Sans SC', sans-serif;

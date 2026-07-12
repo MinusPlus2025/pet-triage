@@ -2,7 +2,7 @@ export default function TopBar() {
   return (
     <header className="pt-10 pb-6">
       <div className="flex items-baseline gap-2">
-        <h1 className="text-2xl font-light tracking-wide text-[var(--color-ink)]">
+        <h1 className="text-2xl font-light tracking-wide text-[var(--color-primary)]">
           毛孩急诊官
         </h1>
         <span className="text-sm font-light text-[var(--color-ink-faint)]">

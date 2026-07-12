@@ -15,10 +15,10 @@ function ChoiceGroup({ label, options, value, onChange }) {
               key={opt.id}
               type="button"
               onClick={() => onChange(opt.id)}
-              className={`rounded-full border px-4 py-1.5 text-sm transition-colors ${
+              className={`rounded-[20px] border px-4 py-1.5 text-sm transition-colors ${
                 active
-                  ? 'border-[var(--color-ink-dim)] bg-[var(--color-surface-2)] text-[var(--color-ink)]'
-                  : 'border-[var(--color-border)] text-[var(--color-ink-dim)] hover:text-[var(--color-ink)]'
+                  ? 'border-[var(--color-primary)] bg-[var(--color-surface-2)] text-[var(--color-primary)]'
+                  : 'border-[var(--color-border-pill)] bg-[var(--color-surface)] text-[var(--color-ink-dim)] hover:text-[var(--color-ink)]'
               }`}
             >
               {opt.label}
@@ -60,7 +60,7 @@ export default function InputArea({
         }}
         placeholder={INPUT_PLACEHOLDER}
         rows={3}
-        className="w-full resize-none rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-ink-faint)] focus:border-[var(--color-ink-dim)] focus:outline-none"
+        className="w-full resize-none rounded-[10px] border-[0.5px] border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-sm text-[var(--color-ink)] placeholder:text-[var(--color-ink-faint)] focus:border-[var(--color-primary)] focus:outline-none"
       />
 
       <div className="flex flex-col gap-4">
@@ -77,7 +77,7 @@ export default function InputArea({
         type="button"
         onClick={onSubmit}
         disabled={disabled}
-        className="w-full rounded-xl bg-[var(--color-ink)] py-3 text-sm font-medium text-[var(--color-bg)] transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+        className="w-full rounded-lg bg-[var(--color-primary)] py-3 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
       >
         帮我判断
       </button>
@@ -92,7 +92,7 @@ export default function InputArea({
               key={ex.id}
               type="button"
               onClick={() => onExample(ex)}
-              className="rounded-full border border-[var(--color-border)] px-3 py-1.5 text-xs text-[var(--color-ink-dim)] transition-colors hover:text-[var(--color-ink)]"
+              className="rounded-[20px] border border-[var(--color-border-pill)] bg-[var(--color-surface)] px-3 py-1.5 text-xs text-[var(--color-ink-dim)] transition-colors hover:text-[var(--color-ink)]"
             >
               {ex.label}
             </button>

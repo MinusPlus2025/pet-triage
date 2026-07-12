@@ -60,9 +60,9 @@ export default function ImageUploader({ images, onChange }) {
           setDragging(false)
           addFiles(e.dataTransfer.files)
         }}
-        className={`flex min-h-[92px] cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed px-4 py-5 text-center transition-colors ${
+        className={`flex min-h-[92px] cursor-pointer flex-col items-center justify-center rounded-[10px] border border-dashed px-4 py-5 text-center transition-colors ${
           dragging
-            ? 'border-[var(--color-ink-dim)] bg-[var(--color-surface-2)]'
+            ? 'border-[var(--color-primary)] bg-[var(--color-surface-2)]'
             : 'border-[var(--color-border)] bg-[var(--color-surface)]'
         } ${full ? 'cursor-not-allowed opacity-50' : ''}`}
       >

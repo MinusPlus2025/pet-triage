@@ -59,20 +59,17 @@ export default function VerdictCard({ verdict }) {
 
   return (
     <section
-      className="overflow-hidden rounded-2xl border bg-[var(--color-surface)]"
-      style={{ borderColor: color }}
+      className="overflow-hidden rounded-[10px]"
+      style={{ backgroundColor: cfg.bg, border: `1.5px solid ${cfg.border}` }}
     >
-      {/* colored header band */}
-      <div
-        className="px-5 py-4"
-        style={{ backgroundColor: `${color}1F`, borderBottom: `1px solid ${color}40` }}
-      >
+      {/* title */}
+      <div className="px-5 pt-5 pb-3">
         <h2 className="text-xl font-light" style={{ color }}>
           {cfg.title}
         </h2>
       </div>
 
-      <div className="flex flex-col gap-5 px-5 py-5">
+      <div className="flex flex-col gap-6 px-5 pb-5">
         {/* reason */}
         {verdict.reason && (
           <p className="text-sm leading-relaxed text-[var(--color-ink)]">
@@ -113,7 +110,7 @@ export default function VerdictCard({ verdict }) {
           <button
             type="button"
             onClick={openNearbyHospital}
-            className="w-full rounded-xl py-3 text-sm font-medium text-white"
+            className="w-full rounded-lg py-3 text-sm font-medium text-white"
             style={{ backgroundColor: color }}
           >
             找最近的医院
@@ -127,7 +124,7 @@ export default function VerdictCard({ verdict }) {
       </div>
 
       {/* disclaimer — always shown */}
-      <div className="border-t border-[var(--color-border)] px-5 py-3">
+      <div className="border-t-[0.5px] border-[var(--color-border)] px-5 py-3">
         <p className="text-xs leading-relaxed text-[var(--color-ink-faint)]">
           {DISCLAIMER}
         </p>

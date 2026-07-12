@@ -9,17 +9,23 @@ export const LOADING_TEXT = '正在看...'
 // §3.4 — level → color + title. Colors locked by PRD.
 export const LEVELS = {
   GREEN: {
-    color: '#2D9E6B',
+    color: '#2E8555', // 标题 / 圆点
+    bg: '#EDF5F0', // 卡片背景
+    border: '#4CA771', // 1.5px 边框
     title: '可以在家观察',
     footnote: '省下这一趟，陪它多睡会儿', // GREEN fixed footer
   },
   YELLOW: {
-    color: '#E6B830',
+    color: '#C97F1A', // 琥珀橙标题 / 圆点（不用纯黄）
+    bg: '#FBF3E5',
+    border: '#F5A623',
     title: '这两天带它去看看',
     checklistLabel: '带着这张清单去医院', // YELLOW sub-block label
   },
   RED: {
-    color: '#D64545',
+    color: '#C93F38', // 医疗砖红标题 / 圆点
+    bg: '#FBEFEE',
+    border: '#D35400',
     title: '现在就走',
     urgentLabel: '为什么不能等', // RED fixed label above urgent_note
   },
