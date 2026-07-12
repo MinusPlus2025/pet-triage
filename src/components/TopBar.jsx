@@ -11,7 +11,10 @@ export default function TopBar() {
               Pet Triage
             </span>
           </div>
-          <h1 className="text-[27px] font-medium leading-none tracking-wide text-[var(--color-primary)]">
+          <h1
+            className="text-[32px] leading-none tracking-wide text-[var(--color-primary)]"
+            style={{ fontFamily: 'var(--font-display)' }}
+          >
             毛孩急诊官
           </h1>
         </div>
