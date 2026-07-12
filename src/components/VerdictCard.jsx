@@ -15,6 +15,18 @@ function splitYellowActions(actions = []) {
   return { checklist, rest }
 }
 
+// §3.4 — jump to the phone's map app searching "宠物医院" via URL scheme.
+// No map API. Desktop falls back to the Google Maps search URL.
+function openNearbyHospital() {
+  const q = encodeURIComponent('宠物医院')
+  const ua = navigator.userAgent
+  let url
+  if (/iPhone|iPad|iPod|Macintosh/.test(ua)) url = `maps://?q=${q}`
+  else if (/Android/.test(ua)) url = `geo:0,0?q=${q}`
+  else url = `https://www.google.com/maps/search/?api=1&query=${q}`
+  window.location.href = url
+}
+
 function ActionList({ items }) {
   return (
     <ul className="flex flex-col gap-1.5">
@@ -94,6 +106,18 @@ export default function VerdictCard({ verdict }) {
               {verdict.urgent_note}
             </p>
           </div>
+        )}
+
+        {/* RED: jump to nearest hospital */}
+        {isRed && (
+          <button
+            type="button"
+            onClick={openNearbyHospital}
+            className="w-full rounded-xl py-3 text-sm font-medium text-white"
+            style={{ backgroundColor: color }}
+          >
+            找最近的医院
+          </button>
         )}
 
         {/* GREEN: fixed footnote */}

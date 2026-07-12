@@ -5,7 +5,15 @@ import ChatArea from './components/ChatArea'
 import VerdictCard from './components/VerdictCard'
 import { buildUserContent, sendTurn, FORCE_CONCLUDE } from './chat'
 
-const ERROR_TEXT = '判断出错，请重新描述'
+// §5 — surface the failure type instead of a single generic message.
+function errorText(err) {
+  const msg = String(err?.message || err)
+  if (msg.startsWith('MISSING_KEY')) return '没读到 API Key，请检查 .env 配置'
+  if (msg.startsWith('BAD_KEY')) return 'API Key 无效，请检查 .env 里的 key'
+  if (msg.startsWith('RATE_LIMIT')) return '请求太频繁了，稍等一下再试'
+  if (msg.startsWith('NETWORK')) return '网络连接不上，检查一下网络再试'
+  return '判断出错，请重新描述'
+}
 
 export default function App() {
   const [images, setImages] = useState([])
@@ -21,7 +29,14 @@ export default function App() {
   // Full Gemini conversation (contents), including the model's raw JSON replies.
   const historyRef = useRef([])
 
+  // §3.1 — clicking an example clears the current conversation, then fills
+  // the case text and options.
   function handleExample(ex) {
+    historyRef.current = []
+    setMessages([])
+    setVerdict(null)
+    setError(null)
+    setImages([])
     setSpecies(ex.species)
     setAge(ex.age)
     setText(ex.text)
@@ -68,10 +83,10 @@ export default function App() {
       } else {
         throw new Error('unexpected shape')
       }
-    } catch {
+    } catch (err) {
       // Roll back this turn so the next submit is a clean user turn.
       historyRef.current = prevHistory
-      setError(ERROR_TEXT)
+      setError(errorText(err))
     } finally {
       setLoading(false)
     }
