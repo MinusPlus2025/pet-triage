@@ -1,11 +1,13 @@
 # dependencies
-node_modules
+node_modules/
 
-# env
+# environment files
 .env
+.env.*
+!.env.example
 
 # build output
-dist
+dist/
 
 # logs
 *.log
@@ -14,5 +16,5 @@ npm-debug.log*
 # editor / OS
 .DS_Store
 
-# local Claude Code settings
-.claude/settings.local.json
+# local development tools
+.claude/
